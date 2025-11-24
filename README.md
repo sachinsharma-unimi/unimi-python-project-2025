@@ -21,3 +21,16 @@ Each question is generated from dataset facts (e.g., actor in movie X, year of r
 ---
 
 ## Repository Structure
+
+unimi-python-project-2025/
+│
+├── project/
+│   ├── data/            → Raw dataset (CSV)
+│   ├── notebooks/       → Jupyter Notebooks for analysis
+│   ├── scripts/         → Python scripts used for cleaning or plotting
+│   ├── app/             → Streamlit demo (optional)
+│   └── outputs/         → Final charts, tables, and report
+│
+├── README.md
+├── requirements.txt
+└── project_report.pdf

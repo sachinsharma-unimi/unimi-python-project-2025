@@ -1,0 +1,21 @@
+type,question,correct,d1,d2,d3,meta
+actor,"Who starred as a main actor in ""Forrest Gump""?",Tom Hanks,Tim Robbins,Christian Bale,Matthew McConaughey,Forrest Gump
+year,"In which year was ""Inception"" released?",2010,2014,1994,2008,Inception
+year,"In which year was ""Toy Story"" released?",1995,2008,1972,1999,Toy Story
+actor,"Who starred as a main actor in ""The Shawshank Redemption""?",Tim Robbins,Brad Pitt,Keanu Reeves,Leonardo DiCaprio,The Shawshank Redemption
+actor,"Who starred as a main actor in ""Interstellar""?",Matthew McConaughey,Tom Hanks,John Travolta,Tim Robbins,Interstellar
+actor,"Who starred as a main actor in ""Toy Story""?",Tom Hanks,John Travolta,Matthew McConaughey,Tim Robbins,Toy Story
+year,"In which year was ""The Shawshank Redemption"" released?",1994,2014,1999,1995,The Shawshank Redemption
+actor,"Who starred as a main actor in ""The Matrix""?",Keanu Reeves,Leonardo DiCaprio,Christian Bale,Tom Hanks,The Matrix
+year,"In which year was ""Forrest Gump"" released?",1994,1972,1995,2014,Forrest Gump
+actor,"Who starred as a main actor in ""The Godfather""?",Marlon Brando,Tom Hanks,Brad Pitt,Christian Bale,The Godfather
+actor,"Who starred as a main actor in ""The Dark Knight""?",Christian Bale,Tim Robbins,Brad Pitt,Keanu Reeves,The Dark Knight
+actor,"Who starred as a main actor in ""Inception""?",Leonardo DiCaprio,Matthew McConaughey,Tom Hanks,Brad Pitt,Inception
+year,"In which year was ""The Godfather"" released?",1972,1994,1999,2010,The Godfather
+year,"In which year was ""The Dark Knight"" released?",2008,2014,1995,1994,The Dark Knight
+year,"In which year was ""Interstellar"" released?",2014,1994,1995,1972,Interstellar
+actor,"Who starred as a main actor in ""Pulp Fiction""?",John Travolta,Brad Pitt,Tom Hanks,Keanu Reeves,Pulp Fiction
+year,"In which year was ""Fight Club"" released?",1999,2014,2010,2008,Fight Club
+year,"In which year was ""The Matrix"" released?",1999,1972,1994,2014,The Matrix
+year,"In which year was ""Pulp Fiction"" released?",1994,2008,2010,1999,Pulp Fiction
+actor,"Who starred as a main actor in ""Fight Club""?",Brad Pitt,Leonardo DiCaprio,Marlon Brando,Tom Hanks,Fight Club

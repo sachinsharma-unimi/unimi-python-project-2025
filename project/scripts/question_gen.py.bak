@@ -1,0 +1,25 @@
+from pathlib import Path
+import pandas as pd
+import sys
+
+# path to sample CSV relative to script: ../data/imdb_sample.csv
+p = Path(__file__).parent.parent / 'data' / 'imdb_sample.csv'
+
+if not p.exists():
+    # try remote raw URL fallback (optional)
+    print("Local CSV not found at:", p)
+    print("Please ensure project/data/imdb_sample.csv exists, or update the path in this script.")
+    sys.exit(1)
+
+df = pd.read_csv(p)
+print("CSV loaded. Rows:", len(df))
+print(df.head())
+
+# simple example question (very basic)
+try:
+    row = df.iloc[0]
+    title = row.get('title') or row.get('movie_title') or 'Unknown Title'
+    year = row.get('year') or row.get('release_year') or 'Unknown Year'
+    print(f"Sample generated question: In which year was \"{title}\" released? Answer: {year}")
+except Exception as e:
+    print("Could not generate sample question:", e)

@@ -1,0 +1,8 @@
+type,question,correct,d1,d2,d3,d4,meta
+genre,"Which of these best describes the genre of ""1999""?",Sci-Fi,Drama,9.3,Sci-Fi,8.8,1999
+year,"In which year was ""1972"" released?",Francis Ford Coppola,David Fincher,Lana Wachowski,Francis Ford Coppola,Christopher Nolan,1972
+year,"In which year was ""1994"" released?",Quentin Tarantino,Quentin Tarantino,Lana Wachowski,David Fincher,Francis Ford Coppola,1994
+year,"In which year was ""1994"" released?",Robert Zemeckis,Christopher Nolan,Frank Darabont,Quentin Tarantino,Robert Zemeckis,1994
+actor,"Who starred as a main actor in ""1994""?",Drama,Action,Crime,Drama,,1994
+year,"In which year was ""2008"" released?",Christopher Nolan,Christopher Nolan,David Fincher,Lana Wachowski,Robert Zemeckis,2008
+year,"In which year was ""1999"" released?",David Fincher,Robert Zemeckis,Christopher Nolan,David Fincher,Lana Wachowski,1999

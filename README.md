@@ -34,3 +34,45 @@ unimi-python-project-2025/
 ├── README.md
 ├── requirements.txt
 └── project_report.pdf
+# Question Generator – Python Project
+
+This project generates multiple-choice questions from a simple IMDb-style CSV file.
+
+---
+
+## Quick Usage
+
+### 1. Create & activate venv
+python -m venv .venv
+source .venv/Scripts/activate      # Git Bash on Windows
+# OR
+.\venv\Scripts\activate            # PowerShell on Windows
+
+### 2. Install dependencies
+pip install -r requirements.txt
+
+### 3. Run the generator
+python project/scripts/question_gen.py
+
+**Output file:**
+project/data/questions.csv
+
+---
+
+## Input format
+The script expects a CSV file with columns:
+`title,year,director,main_actor,genres,rating`
+
+Example input file:
+`project/data/imdb_sample.csv`
+
+---
+
+## Output
+The script generates ~5–10 MCQ questions such as:
+- "In which year was 'Inception' released?"
+- "Who starred as main actor in 'The Matrix'?"
+
+These are saved into:
+`project/data/questions.csv`
+

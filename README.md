@@ -1,78 +1,115 @@
-# Python Project – Coding for Data Science (UniMi 2025)
+🎬 Movie MCQ Question Generator
 
-### Student Details
-- Name: Sachin Sharma  
-- Student ID (Matricola): 69003A  
-- Email: sachin.sharma@studenti.unimi.it  
-- Course: Coding for Data Science & Data Management – Python Module  
-- University: Università degli Studi di Milano (UniMi)
+Python Project – Coding for Data Science (UniMi 2025)
+Student: Sachin Sharma · Matricola: 69003A
 
----
+📖 Overview
 
-## Project Title
-**Who Wants to Be a Millionaire — automatic multiple-choice quiz generator (IMDB dataset)**
+This project automatically generates multiple-choice questions (MCQs) from a movie dataset (CSV).
+It demonstrates Python fundamentals, data handling using pandas, basic automation logic, and reproducible workflow using Git & virtual environments.
 
----
+Input:
+project/data/imdb_sample.csv
+(Columns: title, year, director, main_actor, genres, rating)
 
-## Project Description
-Automatically generate multiple-choice quizzes from a movie dataset (IMDB / Kaggle).  
-Each question is generated from dataset facts (e.g., actor in movie X, year of release, genre). For each question the system creates 4 options (1 correct + 3 distractors) with controlled difficulty. Project includes data ingestion, cleaning, question-generation logic, scoring, and a small Streamlit demo as optional bonus.
+Output:
+project/data/questions.csv — automatically generated quiz questions.
 
----
+🚀 Features
 
-## Repository Structure
+Robust CSV loading (handles malformed rows & inconsistent separators)
 
+Automatic generation of MCQs:
+
+“Which year was ___ released?”
+
+“Who starred in ___?”
+
+“Which genre best describes ___?”
+
+CSV output for easy viewing/sharing
+
+Jupyter Notebook demo included
+
+Clean repository structure with reproducible steps
+
+📂 Project Structure
 unimi-python-project-2025/
 │
 ├── project/
-│   ├── data/            → Raw dataset (CSV)
-│   ├── notebooks/       → Jupyter Notebooks for analysis
-│   ├── scripts/         → Python scripts used for cleaning or plotting
-│   ├── app/             → Streamlit demo (optional)
-│   └── outputs/         → Final charts, tables, and report
+│   ├── data/
+│   │   ├── imdb_sample.csv
+│   │   └── questions.csv            # generated
+│   └── scripts/
+│       └── question_gen.py          # main generator
 │
-├── README.md
-├── requirements.txt
-└── project_report.pdf
-# Question Generator – Python Project
+└── notebooks/
+    └── demo_question_generator.ipynb
 
-This project generates multiple-choice questions from a simple IMDb-style CSV file.
+🛠️ Installation & Setup
+1. Clone the repository
+git clone https://github.com/sachinsharma-unimi/unimi-python-project-2025
+cd unimi-python-project-2025
 
----
-
-## Quick Usage
-
-### 1. Create & activate venv
+2. Create & activate virtual environment
+Git Bash:
 python -m venv .venv
-source .venv/Scripts/activate      # Git Bash on Windows
-# OR
-.\venv\Scripts\activate            # PowerShell on Windows
+source .venv/Scripts/activate
 
-### 2. Install dependencies
+PowerShell:
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+3. Install dependencies
 pip install -r requirements.txt
 
-### 3. Run the generator
+▶️ How to Run the Question Generator
+
+From repo root:
+
 python project/scripts/question_gen.py
 
-**Output file:**
+
+Expected:
+
+Loaded rows: X
+Generated X questions — saved to project/data/questions.csv
+
+📓 Run the Jupyter Notebook Demo
+jupyter notebook
+
+
+Then open:
+
+notebooks/demo_question_generator.ipynb
+
+
+Inside notebook: Cell → Run All
+
+📝 Example Output
+
 project/data/questions.csv
 
----
+question	option1	option2	option3	option4	correct
+In which year was "Inception" released?	2010	1999	2008	2014	2010
+🧪 Notes / Troubleshooting
 
-## Input format
-The script expects a CSV file with columns:
-`title,year,director,main_actor,genres,rating`
+If git push fails → run:
 
-Example input file:
-`project/data/imdb_sample.csv`
+git pull --rebase origin main
+git push
 
----
 
-## Output
-The script generates ~5–10 MCQ questions such as:
-- "In which year was 'Inception' released?"
-- "Who starred as main actor in 'The Matrix'?"
+If CSV parsing warnings appear — they are expected due to messy sample data.
 
-These are saved into:
-`project/data/questions.csv`
+If notebook cannot find files → ensure Jupyter was launched from repo root.
 
+👨‍🎓 Author
+
+Sachin Sharma
+Coding for Data Science — University of Milan
+GitHub: https://github.com/sachinsharma-unimi
+
+✔️ License
+
+MIT License (optional)

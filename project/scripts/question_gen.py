@@ -1,187 +1,190 @@
-#!/usr/bin/env python3
 """
-Simple robust question generator for the project:
- - reads a CSV with movies (columns like title,year,director,main_actor,genres,rating)
- - tolerates occasional malformed rows
- - generates simple MCQ questions (who starred, which year, genre)
- - writes questions to project/data/questions.csv
+question_gen.py
+----------------
+
+This script loads a movie dataset (CSV), cleans column names,
+and automatically generates multiple-choice questions (MCQs)
+based on movie attributes such as:
+
+- Release year
+- Main actor
+- Genre
+
+The script outputs a CSV file named:
+    project/data/questions.csv
+
+This file includes automatically generated MCQs with:
+question, correct option, and 3 distractor options.
+
+Author: Sachin Sharma
+Course: Coding for Data Science — UniMi (2025)
 """
-from pathlib import Path
-import random
+
 import pandas as pd
-import numpy as np
+import random
+from pathlib import Path
 
-HERE = Path(__file__).resolve().parents[1]  # repo/project
-DATA_DIR = HERE / "data"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-INPUT_CSV = DATA_DIR / "imdb_sample.csv"
-OUTPUT_CSV = DATA_DIR / "questions.csv"
+# ---------------------------------------------------------------------
+# 1) Robust CSV Reader
+# ---------------------------------------------------------------------
 
 def read_robust_csv(path):
-    # Try default parser first, then fall back to python engine with loose parsing.
+    """
+    Reads a CSV file using a robust strategy:
+      1. Attempt fast C parser
+      2. Fallback to Python engine + warning mode for malformed lines
+
+    Parameters:
+        path (str or Path): path to CSV file
+
+    Returns:
+        pd.DataFrame: parsed DataFrame
+    """
     try:
-        df = pd.read_csv(path)
-        return df
-    except Exception:
-        # try with python engine and warn on bad lines (pandas >=1.3)
+        # Fast parser (C engine) — fails on malformed rows
+        return pd.read_csv(path)
+    except Exception as e1:
+        print("Fast CSV parser failed. Falling back to Python engine...")
+        print("Reason:", e1)
+
         try:
-            df = pd.read_csv(path, engine="python", on_bad_lines="warn")
-            return df
+            # Python engine — tolerant to bad rows
+            return pd.read_csv(path, engine="python", on_bad_lines="warn")
+
         except TypeError:
-            # older pandas that doesn't have on_bad_lines param
-            df = pd.read_csv(path, engine="python", error_bad_lines=False, warn_bad_lines=True)
-            return df
+            # Compatibility for older pandas versions
+            return pd.read_csv(path, engine="python", error_bad_lines=False, warn_bad_lines=True)
 
-def normalise_cols(df):
-    # Lower-case column names and strip whitespace
-    df.columns = [c.strip() for c in df.columns]
-    # keep only useful columns if present
-    wanted = []
-    for c in ("title", "movie_title"):
-        if c in df.columns:
-            wanted.append(c)
-            break
-    # optional columns
-    for c in ("year", "release_year"):
-        if c in df.columns:
-            wanted.append(c); break
-    for c in ("main_actor","actor","lead"):
-        if c in df.columns:
-            wanted.append(c); break
-    for c in ("director",):
-        if c in df.columns:
-            wanted.append(c); break
-    for c in ("genres",):
-        if c in df.columns:
-            wanted.append(c); break
-    if "rating" in df.columns:
-        wanted.append("rating")
-    return df, wanted
 
-def sample_distractors(df, correct_value, field, n=3):
-    # sample distractors from dataframe values in that field (exclude correct)
-    candidates = df[field].dropna().astype(str).unique().tolist()
-    candidates = [c for c in candidates if c != str(correct_value)]
-    if not candidates:
-        return []
-    return random.sample(candidates, k=min(n, len(candidates)))
+# ---------------------------------------------------------------------
+# 2) Normalize column names
+# ---------------------------------------------------------------------
 
-def make_questions(df, n_questions=20, seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
-    out = []
-    # ensure typical column names exist
+def normalize_columns(df):
+    """
+    Lowercases and strips whitespace from column names.
+
+    Parameters:
+        df (pd.DataFrame): input dataframe
+
+    Returns:
+        pd.DataFrame: cleaned dataframe
+    """
     df = df.copy()
-    for i, row in df.iterrows():
-        # unify possible title columns
-        title = None
-        for c in ("title","movie_title"):
-            if c in df.columns:
-                title = row.get(c)
-                break
-        if pd.isna(title):
-            continue
-        # pick a question type
-        qtype = random.choice(["year","actor","genre"])
-        if qtype == "year":
-            if "year" not in df.columns and "release_year" not in df.columns:
-                continue
-            year_field = "year" if "year" in df.columns else "release_year"
-            correct = row.get(year_field)
-            if pd.isna(correct):
-                continue
-            distract = sample_distractors(df, correct, year_field, 3)
-            # some formatting
-            choices = [str(correct)] + [str(x) for x in distract]
-            choices = choices[:4]
-            random.shuffle(choices)
-            qtext = f'In which year was "{title}" released?'
-            out.append({
-                "type":"year",
-                "question": qtext,
-                "correct": str(correct),
-                "d1": choices[0] if len(choices)>0 else "",
-                "d2": choices[1] if len(choices)>1 else "",
-                "d3": choices[2] if len(choices)>2 else "",
-                "d4": choices[3] if len(choices)>3 else "",
-                "meta": title
-            })
-        elif qtype == "actor":
-            # need main actor column
-            actor_col = None
-            for c in ("main_actor","actor","lead"):
-                if c in df.columns:
-                    actor_col = c; break
-            if not actor_col:
-                continue
-            correct = row.get(actor_col)
-            if pd.isna(correct):
-                continue
-            distracts = sample_distractors(df, correct, actor_col, 3)
-            choices = [str(correct)] + [str(x) for x in distracts]
-            choices = choices[:4]
-            random.shuffle(choices)
-            qtext = f'Who starred as a main actor in "{title}"?'
-            out.append({
-                "type":"actor",
-                "question": qtext,
-                "correct": str(correct),
-                "d1": choices[0] if len(choices)>0 else "",
-                "d2": choices[1] if len(choices)>1 else "",
-                "d3": choices[2] if len(choices)>2 else "",
-                "d4": choices[3] if len(choices)>3 else "",
-                "meta": title
-            })
-        else:  # genre
-            if "genres" not in df.columns:
-                continue
-            correct = row.get("genres")
-            if pd.isna(correct):
-                continue
-            # genres could be pipe/comma separated; take first as canonical
-            if isinstance(correct, str) and ("," in correct or "|" in correct):
-                correct_first = correct.split(",")[0].split("|")[0].strip()
-            else:
-                correct_first = str(correct)
-            distracts = sample_distractors(df, correct_first, "genres", 3)
-            choices = [str(correct_first)] + [str(x) for x in distracts]
-            choices = choices[:4]
-            random.shuffle(choices)
-            qtext = f'Which of these best describes the genre of "{title}"?'
-            out.append({
-                "type":"genre",
-                "question": qtext,
-                "correct": str(correct_first),
-                "d1": choices[0] if len(choices)>0 else "",
-                "d2": choices[1] if len(choices)>1 else "",
-                "d3": choices[2] if len(choices)>2 else "",
-                "d4": choices[3] if len(choices)>3 else "",
-                "meta": title
-            })
-        if len(out) >= n_questions:
-            break
-    return out
+    df.columns = [str(c).strip().lower() for c in df.columns]
+    return df
+
+
+# ---------------------------------------------------------------------
+# 3) Generate MCQ Questions
+# ---------------------------------------------------------------------
+
+def generate_questions(df, n_questions=20, seed=42):
+    """
+    Generates multiple-choice questions from movie dataset.
+
+    Question types include:
+      - Release year (e.g., “In which year was The Matrix released?”)
+      - Main actor (e.g., “Who starred in The Matrix?”)
+      - Genre (e.g., “Which genre best describes Inception?”)
+
+    Parameters:
+        df (pd.DataFrame): movie DataFrame with columns:
+                           title, year, main_actor, genres
+        n_questions (int): number of questions to generate
+        seed (int): random seed for repeatability
+
+    Returns:
+        list[dict]: list of question dictionaries
+    """
+    random.seed(seed)
+    questions = []
+
+    rows = df.to_dict(orient="records")
+
+    # Collect values for distractors
+    all_years = [r.get("year") for r in rows if pd.notna(r.get("year"))]
+    all_actors = [r.get("main_actor") for r in rows if pd.notna(r.get("main_actor"))]
+    all_genres = [r.get("genres") for r in rows if pd.notna(r.get("genres"))]
+
+    def get_distractors(pool, correct, k=3):
+        """Return k distractor values, different from the correct answer."""
+        unique = list(set([p for p in pool if p != correct]))
+        random.shuffle(unique)
+        return unique[:k] + [""] * (k - len(unique))
+
+    for _ in range(n_questions):
+        movie = random.choice(rows)
+
+        title = movie.get("title")
+        year = movie.get("year")
+        actor = movie.get("main_actor")
+        genres = movie.get("genres")
+
+        # Choose question type
+        qtype = random.choice(["year", "actor", "genre"])
+
+        if qtype == "year" and pd.notna(year):
+            question = f"In which year was \"{title}\" released?"
+            distractors = get_distractors(all_years, year)
+            correct = year
+
+        elif qtype == "actor" and pd.notna(actor):
+            question = f"Who starred as the main actor in \"{title}\"?"
+            distractors = get_distractors(all_actors, actor)
+            correct = actor
+
+        elif qtype == "genre" and pd.notna(genres):
+            # Sometimes genres have multiple entries — take the first
+            correct = str(genres).split(",")[0]
+            question = f"Which best describes the genre of \"{title}\"?"
+            distractors = get_distractors(all_genres, genres)
+
+        else:
+            continue  # Skip if missing fields
+
+        # Build MCQ dictionary
+        q = {
+            "type": qtype,
+            "question": question,
+            "correct": str(correct),
+            "d1": str(distractors[0]),
+            "d2": str(distractors[1]),
+            "d3": str(distractors[2]),
+            "meta": title
+        }
+        questions.append(q)
+
+    return questions
+
+
+# ---------------------------------------------------------------------
+# 4) Main execution block
+# ---------------------------------------------------------------------
 
 def main():
-    if not INPUT_CSV.exists():
-        print("ERROR: input CSV not found:", INPUT_CSV)
-        return 2
-    df = read_robust_csv(INPUT_CSV)
-    print("Loaded rows:", len(df))
-    df, cols = normalise_cols(df)
-    # if genres column exists and is single string, fine
-    questions = make_questions(df, n_questions=20)
-    if not questions:
-        print("No questions generated (not enough columns/data).")
-        return 3
-    qdf = pd.DataFrame(questions)
-    qdf.to_csv(OUTPUT_CSV, index=False)
-    print(f"Generated {len(qdf)} questions — saved to {OUTPUT_CSV}")
-    # print a few sample questions
-    for r in qdf.head(5).itertuples(index=False):
-        print("-", r.question)
-    return 0
+    """Main execution: loads CSV, generates questions, saves output."""
+    data_dir = Path("project/data")
+    input_csv = data_dir / "imdb_sample.csv"
+    output_csv = data_dir / "questions.csv"
 
+    print("Loading dataset from:", input_csv)
+
+    df = read_robust_csv(input_csv)
+    df = normalize_columns(df)
+
+    print("Loaded rows:", len(df))
+
+    questions = generate_questions(df, n_questions=20)
+    print(f"Generated {len(questions)} questions.")
+
+    out_df = pd.DataFrame(questions)
+    out_df.to_csv(output_csv, index=False)
+
+    print("Saved questions →", output_csv)
+
+
+# Run main only when script executed directly
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
